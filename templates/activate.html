@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Aktivasi License</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="center">
+  <div class="card">
+    <h2>Aktivasi License</h2>
+    <input type="text" id="key" placeholder="Masukkan key" required>
+    <button onclick="activate()">Aktivasi</button>
+    <p id="status"></p>
+  </div>
+
+<script>
+async function getHWID() {
+  const raw = navigator.userAgent + screen.width + "x" + screen.height +
+              navigator.language + navigator.hardwareConcurrency;
+  const buf = await crypto.subtle.digest("SHA-256",
+              new TextEncoder().encode(raw));
+  return [...new Uint8Array(buf)]
+    .map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 16).toUpperCase();
+}
+
+async function activate() {
+  const key = document.getElementById("key").value.trim();
+  const hwid = await getHWID();
+  const status = document.getElementById("status");
+
+  status.textContent = "Memproses...";
+  try {
+    const r = await fetch("/api/activate", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({key, hwid})
+    });
+    const data = await r.json();
+    if (data.ok) {
+      localStorage.setItem("license_key", key);
+      localStorage.setItem("license_token", data.token);
+      localStorage.setItem("license_hwid", hwid);
+      const exp = new Date(data.expiry * 1000).toLocaleDateString();
+      status.innerHTML = '<span class="ok">Aktif sampai ' + exp + '</span>';
+    } else {
+      status.innerHTML = '<span class="bad">Gagal: ' + data.msg + '</span>';
+    }
+  } catch (e) {
+    status.innerHTML = '<span class="bad">Error: ' + e.message + '</span>';
+  }
+}
+
+(async () => {
+  const key = localStorage.getItem("license_key");
+  if (!key) return;
+  const hwid = localStorage.getItem("license_hwid");
+  const token = localStorage.getItem("license_token");
+  const r = await fetch("/api/verify", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({key, hwid, token})
+  });
+  const data = await r.json();
+  document.getElementById("status").innerHTML = data.ok
+    ? '<span class="ok">License aktif</span>'
+    : '<span class="bad">License tidak valid: ' + data.msg + '</span>';
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>License Admin</h1>
+      <a href="/admin/logout" class="btn-secondary">Logout</a>
+    </div>
+
+    <form method="post" action="/admin/create" class="card row">
+      <input type="number" name="days" value="30" min="1" placeholder="Hari">
+      <input type="text" name="note" placeholder="Catatan (opsional)">
+      <button type="submit">Buat Key Baru</button>
+    </form>
+
+    <table class="card">
+      <thead>
+        <tr>
+          <th>Key</th><th>HWID</th><th>Status</th>
+          <th>Sisa</th><th>Expired</th><th>Note</th><th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in licenses %}
+        <tr>
+          <td><code>{{ l.key }}</code></td>
+          <td>{{ l.hwid }}</td>
+          <td class="{{ 'ok' if l.status == 'AKTIF' else 'bad' }}">{{ l.status }}</td>
+          <td>{{ l.sisa }} hari</td>
+          <td>{{ l.expiry_date }}</td>
+          <td>{{ l.note }}</td>
+          <td>
+            <form method="post" action="/admin/revoke/{{ l.key }}" style="display:inline">
+              <button class="btn-warn">Revoke</button>
+            </form>
+            <form method="post" action="/admin/delete/{{ l.key }}" style="display:inline"
+                  onsubmit="return confirm('Hapus permanen?')">
+              <button class="btn-danger">Hapus</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
