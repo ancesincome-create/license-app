@@ -12,11 +12,38 @@
       <a href="/admin/logout" class="btn-secondary">Logout</a>
     </div>
 
-    <form method="post" action="/admin/create" class="card row">
-      <input type="number" name="days" value="30" min="1" placeholder="Hari">
-      <input type="text" name="note" placeholder="Catatan (opsional)">
-      <button type="submit">Buat Key Baru</button>
-    </form>
+    <form method="post" action="/admin/create" class="card">
+  <div class="row">
+    <input type="number" id="daysInput" name="days" value="7" min="1" placeholder="Hari" required>
+    <input type="text" name="note" placeholder="Catatan (opsional)">
+    <button type="submit">Buat Key Baru</button>
+  </div>
+  <div class="preset-row">
+    <button type="button" class="preset" onclick="setDays(1)">1 Hari</button>
+    <button type="button" class="preset" onclick="setDays(3)">3 Hari</button>
+    <button type="button" class="preset" onclick="setDays(7)">7 Hari</button>
+    <button type="button" class="preset" onclick="setDays(14)">14 Hari</button>
+    <button type="button" class="preset" onclick="setDays(30)">30 Hari</button>
+    <button type="button" class="preset" onclick="setDays(60)">60 Hari</button>
+  </div>
+  <div class="custom-row">
+    <label>Custom:</label>
+    <input type="number" id="customDays" min="1" placeholder="Contoh: 100" style="max-width:160px">
+    <button type="button" class="preset" onclick="setCustomDays()">Pakai Custom</button>
+  </div>
+</form>
+
+<script>
+function setDays(n) {
+  document.getElementById('daysInput').value = n;
+}
+function setCustomDays() {
+  var v = document.getElementById('customDays').value;
+  if (v && Number(v) >= 1) {
+    document.getElementById('daysInput').value = v;
+  }
+}
+</script>
 
     <table class="card">
       <thead>
