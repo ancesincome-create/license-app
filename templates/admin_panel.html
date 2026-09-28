@@ -1,79 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
   <meta charset="utf-8">
-  <title>Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Panel — RED Panel</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+
   <div class="container">
+
     <div class="header">
-      <h1>License Admin</h1>
-      <a href="/admin/logout" class="btn-secondary">Logout</a>
+      <h1>Admin Panel</h1>
+      <div>
+        <span style="color:#94a3b8;margin-right:12px">{{ username }} (admin)</span>
+        <a href="/admin/users" class="btn-secondary">👥 User</a>
+        <a href="/admin/prices" class="btn-secondary">💰 Harga</a>
+        <a href="/admin/history" class="btn-secondary">📜 Riwayat</a>
+        <a href="/logout" class="btn-secondary">Logout</a>
+      </div>
     </div>
 
-    <form method="post" action="/admin/create" class="card">
-  <div class="row">
-    <input type="number" id="daysInput" name="days" value="7" min="1" placeholder="Hari" required>
-    <input type="text" name="note" placeholder="Catatan (opsional)">
-    <button type="submit">Buat Key Baru</button>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Reseller</div>
+        <div class="stat-value">{{ stats.total_users }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending Approve</div>
+        <div class="stat-value" style="color:#f59e0b">{{ stats.pending }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Key</div>
+        <div class="stat-value">{{ stats.total_keys }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Aktivasi</div>
+        <div class="stat-value">{{ stats.total_activations }}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Buat Key Baru (Admin)</h3>
+      <form method="post" action="/admin/create" style="margin-top:12px">
+        <div class="row">
+          <input type="number" id="daysInput" name="days" value="7" min="1" placeholder="Hari" required>
+          <input type="text" name="note" placeholder="Catatan (opsional)">
+          <button type="submit" class="btn-primary">Buat Key</button>
+        </div>
+        <div class="preset-row" style="margin-top:12px">
+          <button type="button" class="preset" onclick="setDays(1)">1 Hari</button>
+          <button type="button" class="preset" onclick="setDays(3)">3 Hari</button>
+          <button type="button" class="preset" onclick="setDays(7)">7 Hari</button>
+          <button type="button" class="preset" onclick="setDays(14)">14 Hari</button>
+          <button type="button" class="preset" onclick="setDays(30)">30 Hari</button>
+          <button type="button" class="preset" onclick="setDays(60)">60 Hari</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Semua Key (100 terbaru)</h3>
+      <table style="margin-top:14px">
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th>HWID</th>
+            <th>Status</th>
+            <th>Sisa</th>
+            <th>Expired</th>
+            <th>Dibuat oleh</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in licenses %}
+          <tr>
+            <td><code>{{ l.key }}</code></td>
+            <td><span style="font-size:12px">{{ l.hwid }}</span></td>
+            <td class="{{ 'ok' if l.status == 'AKTIF' else 'bad' }}">{{ l.status }}</td>
+            <td>{{ l.sisa }} hari</td>
+            <td style="font-size:12px">{{ l.expiry_date }}</td>
+            <td>{{ l.created_by }}</td>
+            <td>
+              <form method="post" action="/admin/revoke/{{ l.key }}" style="display:inline">
+                <button class="btn-warn" style="padding:6px 10px;font-size:12px">Revoke</button>
+              </form>
+              <form method="post" action="/admin/delete/{{ l.key }}" style="display:inline"
+                    onsubmit="return confirm('Hapus permanen?')">
+                <button class="btn-danger" style="padding:6px 10px;font-size:12px">Hapus</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:20px">Belum ada key.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
   </div>
-  <div class="preset-row">
-    <button type="button" class="preset" onclick="setDays(1)">1 Hari</button>
-    <button type="button" class="preset" onclick="setDays(3)">3 Hari</button>
-    <button type="button" class="preset" onclick="setDays(7)">7 Hari</button>
-    <button type="button" class="preset" onclick="setDays(14)">14 Hari</button>
-    <button type="button" class="preset" onclick="setDays(30)">30 Hari</button>
-    <button type="button" class="preset" onclick="setDays(60)">60 Hari</button>
-  </div>
-  <div class="custom-row">
-    <label>Custom:</label>
-    <input type="number" id="customDays" min="1" placeholder="Contoh: 100" style="max-width:160px">
-    <button type="button" class="preset" onclick="setCustomDays()">Pakai Custom</button>
-  </div>
-</form>
 
 <script>
 function setDays(n) {
   document.getElementById('daysInput').value = n;
 }
-function setCustomDays() {
-  var v = document.getElementById('customDays').value;
-  if (v && Number(v) >= 1) {
-    document.getElementById('daysInput').value = v;
-  }
-}
 </script>
-
-    <table class="card">
-      <thead>
-        <tr>
-          <th>Key</th><th>HWID</th><th>Status</th>
-          <th>Sisa</th><th>Expired</th><th>Note</th><th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for l in licenses %}
-        <tr>
-          <td><code>{{ l.key }}</code></td>
-          <td>{{ l.hwid }}</td>
-          <td class="{{ 'ok' if l.status == 'AKTIF' else 'bad' }}">{{ l.status }}</td>
-          <td>{{ l.sisa }} hari</td>
-          <td>{{ l.expiry_date }}</td>
-          <td>{{ l.note }}</td>
-          <td>
-            <form method="post" action="/admin/revoke/{{ l.key }}" style="display:inline">
-              <button class="btn-warn">Revoke</button>
-            </form>
-            <form method="post" action="/admin/delete/{{ l.key }}" style="display:inline"
-                  onsubmit="return confirm('Hapus permanen?')">
-              <button class="btn-danger">Hapus</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
 </body>
 </html>
