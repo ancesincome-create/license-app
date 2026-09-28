@@ -283,6 +283,25 @@ def admin_users():
         })
     return render_template("admin_users.html", users=users, username=session.get("username"))
 
+@app.route("/admin/users/create", methods=["POST"])
+@admin_required
+def admin_users_create():
+    username = request.form.get("username", "").strip()
+    password = request.form.get("password", "")
+    role = request.form.get("role", "reseller")
+    quota = int(request.form.get("quota", 100) or 100)
+    if not username or not password:
+        flash("Username dan password wajib diisi", "error")
+        return redirect(url_for("admin_users"))
+    con = db()
+    try:
+        con.execute("INSERT INTO users (username, password_hash, role, balance, quota, approved, active, created_at) VALUES (?,?,?,?,?,?,?,?)",
+                    (username, generate_password_hash(password), role, 0, quota, 0, 1, int(time.time())))
+        con.commit()
+    except sqlite3.IntegrityError:
+        flash("Username sudah dipakai", "error")
+    return redirect(url_for("admin_users"))
+
 @app.route("/admin/users/approve/<int:user_id>", methods=["POST"])
 @admin_required
 def admin_users_approve(user_id):
