@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard Reseller — RED Panel</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <h1>Dashboard</h1>
+      <div>
+        <span style="color:#94a3b8;margin-right:12px">{{ username }}</span>
+        <a href="/profile" class="btn-secondary">Profil</a>
+        <a href="/logout" class="btn-secondary">Logout</a>
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Balance</div>
+        <div class="stat-value">${{ balance }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Quota Terpakai</div>
+        <div class="stat-value">{{ used }} / {{ quota }}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Buat Key Baru</h3>
+      <form method="post" action="/dashboard/create" style="margin-top:12px">
+        <div class="preset-row">
+          {% for p in prices %}
+            <button type="button" class="preset" onclick="setDays({{ p.days }})">
+              {{ p.days }} Hari — ${{ p.price }}
+            </button>
+          {% endfor %}
+        </div>
+        <div class="row" style="margin-top:14px">
+          <input type="number" id="daysInput" name="days" value="1" min="1" placeholder="Hari" required>
+          <input type="text" name="note" placeholder="Catatan (opsional)">
+          <button type="submit" class="btn-primary">Buat Key</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Riwayat Aktivasi</h3>
+      <p style="color:#94a3b8;font-size:13px;margin-top:6px">User yang sudah aktivasi key dari kamu.</p>
+      <table style="margin-top:14px">
+        <thead>
+          <tr>
+            <th>#ID</th>
+            <th>Key</th>
+            <th>HWID User</th>
+            <th>Durasi</th>
+            <th>Waktu</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if activations %}
+            {% for a in activations %}
+            <tr>
+              <td>#{{ a.id }}</td>
+              <td><code>{{ a.key }}</code></td>
+              <td><span style="font-size:12px">{{ a.hwid }}</span></td>
+              <td><b>{{ a.duration }} hari</b></td>
+              <td style="font-size:12px;color:#94a3b8">{{ a.when }}</td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:20px">Belum ada aktivasi.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Key yang Kamu Buat</h3>
+      <table style="margin-top:14px">
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th>Status</th>
+            <th>Sisa</th>
+            <th>Durasi</th>
+            <th>HWID</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for k in keys %}
+          <tr>
+            <td><code>{{ k.key }}</code></td>
+            <td class="{{ 'ok' if k.status == 'AKTIF' else 'bad' }}">{{ k.status }}</td>
+            <td>{{ k.sisa }} hari</td>
+            <td>{{ k.duration }} hari</td>
+            <td><span style="font-size:12px">{{ k.hwid }}</span></td>
+            <td>
+              <form method="post" action="/dashboard/revoke/{{ k.key }}" style="display:inline"
+                    onsubmit="return confirm('Revoke key ini?')">
+                <button class="btn-warn" style="padding:6px 10px;font-size:12px">Revoke</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:20px">Belum ada key.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+<script>
+function setDays(n) {
+  document.getElementById('daysInput').value = n;
+}
+</script>
+</body>
+</html>
