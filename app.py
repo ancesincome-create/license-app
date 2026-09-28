@@ -325,11 +325,7 @@ def admin_users_quota(user_id):
 @app.route("/admin/users/topup/<int:user_id>", methods=["POST"])
 @admin_required
 def admin_users_topup(user_id):
-    try:
-    amount = int(request.form.get("amount", 0) or 0)
-except (ValueError, TypeError):
-    return redirect(url_for("admin_users"))
-    note = request.form.get("note", "")
+    amount = int(request.form.get("amount") or 0)
     con = db()
     row = con.execute("SELECT username FROM users WHERE id=?", (user_id,)).fetchone()
     if row:
