@@ -24,3 +24,31 @@ code { background: #0f172a; padding: 3px 8px; border-radius: 6px;
 .ok { color: #22c55e; } .bad { color: #ef4444; }
 .error { color: #ef4444; margin-bottom: 10px; }
 h1, h2 { margin: 0 0 16px; }
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.preset {
+  padding: 8px 14px;
+  font-size: 13px;
+  background: #334155;
+  border-radius: 6px;
+  border: none;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+.preset:hover {
+  background: #475569;
+}
+.custom-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+.custom-row label {
+  font-size: 14px;
+  color: #94a3b8;
+}
