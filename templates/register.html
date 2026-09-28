@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daftar Reseller — RED Panel</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="auth-body">
+
+  <div class="auth-container">
+
+    <div class="auth-header">
+      <div class="logo-badge">RED</div>
+      <h1>Daftar Reseller</h1>
+      <p class="subtitle">Buat akun untuk mulai jualan</p>
+    </div>
+
+    <form method="post" class="auth-card">
+
+      {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+      {% endif %}
+
+      {% if success %}
+      <div class="alert alert-success">{{ success }}</div>
+      {% endif %}
+
+      <label class="input-label">Username</label>
+      <input type="text" name="username" placeholder="Pilih username" required autofocus>
+
+      <label class="input-label">Password</label>
+      <input type="password" name="password" placeholder="Minimal 6 karakter" required minlength="6">
+
+      <div class="info-box">
+        ⓘ Setelah daftar, akunmu perlu <b>approve dari admin</b> sebelum bisa login.
+      </div>
+
+      <button type="submit" class="btn-primary">Daftar Sekarang</button>
+
+      <div class="auth-links">
+        <span>Sudah punya akun? <a href="/login">Login di sini</a></span>
+      </div>
+
+      <div class="auth-links">
+        <a href="/">← Kembali ke Beranda</a>
+      </div>
+
+    </form>
+
+  </div>
+
+</body>
+</html>
