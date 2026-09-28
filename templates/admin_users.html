@@ -24,7 +24,24 @@
       {% endfor %}
     {% endwith %}
 
-    <form method="post" action="/admin/users/approve/0" style="display:none"></form>
+    <div class="card">
+  <h3>Tambah User Baru</h3>
+  <p style="color:#94a3b8;font-size:13px;margin-top:6px">
+    Buat akun admin atau reseller baru.
+  </p>
+  <form method="post" action="/admin/users/create">
+    <div class="row" style="margin-top:12px">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password (min 6 karakter)" required minlength="6">
+      <select name="role" style="padding:10px;border-radius:8px;background:#0f0f0f;color:#f5f5f5;border:1px solid #2d2d2d;flex:0 0 auto">
+        <option value="reseller">Reseller</option>
+        <option value="admin">Admin</option>
+      </select>
+      <input type="number" name="quota" value="100" min="1" placeholder="Quota" style="max-width:120px">
+      <button type="submit" class="btn-primary">Tambah User</button>
+    </div>
+  </form>
+</div>
 
     <div class="card">
       <h3>Daftar User</h3>
