@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Riwayat Aktivasi — RED Panel</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <h1>Riwayat Aktivasi</h1>
+      <div>
+        <a href="/admin" class="btn-secondary">← Panel</a>
+        <a href="/logout" class="btn-secondary">Logout</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <p style="color:#94a3b8;font-size:13px">
+        Semua aktivasi key yang dilakukan oleh user (terbaru di atas, max 200).
+      </p>
+
+      <table style="margin-top:16px">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Key</th>
+            <th>HWID User</th>
+            <th>IP</th>
+            <th>Durasi</th>
+            <th>Reseller</th>
+            <th>Waktu</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if activations %}
+            {% for a in activations %}
+            <tr>
+              <td>#{{ a.id }}</td>
+              <td><code>{{ a.key }}</code></td>
+              <td><span style="font-size:12px">{{ a.hwid }}</span></td>
+              <td><span style="font-size:12px">{{ a.ip }}</span></td>
+              <td><b>{{ a.duration }} hari</b></td>
+              <td>{{ a.reseller }}</td>
+              <td style="font-size:12px;color:#94a3b8">{{ a.when }}</td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="7" style="text-align:center;color:#94a3b8;padding:30px">
+                Belum ada aktivasi key.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</body>
+</html>
