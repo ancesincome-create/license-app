@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atur Harga — RED Panel</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <h1>Atur Harga</h1>
+      <div>
+        <a href="/admin" class="btn-secondary">← Panel</a>
+        <a href="/logout" class="btn-secondary">Logout</a>
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="card">
+      <h3>Harga Per Durasi Key</h3>
+      <p style="color:#94a3b8;font-size:13px;margin-top:6px">
+        Harga ini yang dipakai saat reseller buat key. Balance reseller akan dipotong sesuai harga di bawah.
+      </p>
+
+      <form method="post" style="margin-top:20px">
+        <table>
+          <thead>
+            <tr>
+              <th>Durasi</th>
+              <th>Harga ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in prices %}
+            <tr>
+              <td><b>{{ p.days }} hari</b></td>
+              <td>
+                <input type="number" name="price_{{ p.days }}" value="{{ p.price }}" min="0" style="width:120px;padding:8px 12px">
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <button type="submit" class="btn-primary" style="margin-top:16px">Simpan Harga</button>
+      </form>
+    </div>
+
+    <div class="card" style="border-left:4px solid #f87171">
+      <b>💡 Catatan:</b>
+      <p style="color:#94a3b8;font-size:13px;margin-top:8px">
+        Kalau kamu ubah harga, key yang sudah dibuat tidak terpengaruh — hanya key baru yang akan memakai harga terbaru.
+      </p>
+    </div>
+
+  </div>
+
+</body>
+</html>
