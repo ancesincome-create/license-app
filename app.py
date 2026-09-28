@@ -345,6 +345,7 @@ def admin_users_quota(user_id):
 @admin_required
 def admin_users_topup(user_id):
     amount = int(request.form.get("amount") or 0)
+    note = request.form.get("note", "")
     con = db()
     row = con.execute("SELECT username FROM users WHERE id=?", (user_id,)).fetchone()
     if row:
