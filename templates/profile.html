@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profil — RED Panel</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <h1>Profil</h1>
+      <div>
+        <a href="/dashboard" class="btn-secondary">← Dashboard</a>
+        <a href="/logout" class="btn-secondary">Logout</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Informasi Akun</h3>
+      <table style="margin-top:14px">
+        <tbody>
+          <tr><td style="color:#94a3b8">Username</td><td><b>{{ info.username }}</b></td></tr>
+          <tr><td style="color:#94a3b8">Role</td><td><b>{{ info.role }}</b></td></tr>
+          <tr><td style="color:#94a3b8">Balance</td><td><b style="color:#f87171">${{ info.balance }}</b></td></tr>
+          <tr><td style="color:#94a3b8">Quota</td><td><b>{{ info.used }} / {{ info.quota }}</b></td></tr>
+          <tr><td style="color:#94a3b8">Terdaftar</td><td>{{ info.created }}</td></tr>
+          <tr><td style="color:#94a3b8">Login Terakhir</td><td>{{ info.last_login }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Riwayat Top-Up</h3>
+      <p style="color:#94a3b8;font-size:13px;margin-top:6px">
+        Top-up saldo yang dilakukan admin ke akunmu.
+      </p>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr>
+            <th>Jumlah</th>
+            <th>Catatan</th>
+            <th>Admin</th>
+            <th>Waktu</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if topups %}
+            {% for t in topups %}
+            <tr>
+              <td>
+                {% if t.amount >= 0 %}
+                  <b style="color:#22c55e">+${{ t.amount }}</b>
+                {% else %}
+                  <b style="color:#ef4444">-${{ -t.amount }}</b>
+                {% endif %}
+              </td>
+              <td>{{ t.note }}</td>
+              <td>{{ t.admin }}</td>
+              <td style="font-size:12px;color:#94a3b8">{{ t.when }}</td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="4" style="text-align:center;color:#94a3b8;padding:20px">
+                Belum ada top-up.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</body>
+</html>
