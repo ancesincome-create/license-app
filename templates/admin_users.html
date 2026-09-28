@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kelola User — RED Panel</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <h1>Kelola User</h1>
+      <div>
+        <a href="/admin" class="btn-secondary">← Panel</a>
+        <a href="/logout" class="btn-secondary">Logout</a>
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="post" action="/admin/users/approve/0" style="display:none"></form>
+
+    <div class="card">
+      <h3>Daftar User</h3>
+      <p style="color:#94a3b8;font-size:13px;margin-top:6px">
+        Approve reseller baru, atur quota, dan top-up balance.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Status</th>
+            <th>Balance</th>
+            <th>Quota</th>
+            <th>Login Terakhir</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>
+              <code>{{ u.username }}</code>
+              {% if u.role == 'admin' %}
+                <span style="color:#f87171;font-size:11px;margin-left:6px">(admin)</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if not u.active %}
+                <span class="bad">Nonaktif</span>
+              {% elif not u.approved %}
+                <span class="warn">Pending</span>
+              {% else %}
+                <span class="ok">Aktif</span>
+              {% endif %}
+            </td>
+            <td>${{ u.balance }}</td>
+            <td>{{ u.used }} / {{ u.quota }}</td>
+            <td style="font-size:12px;color:#94a3b8">{{ u.last_login }}</td>
+            <td>
+              {% if not u.approved %}
+              <form method="post" action="/admin/users/approve/{{ u.id }}" style="display:inline">
+                <button class="btn-primary" style="padding:6px 10px;font-size:12px">✓ Approve</button>
+              </form>
+              {% endif %}
+
+              <form method="post" action="/admin/users/quota/{{ u.id }}" style="display:inline-flex;gap:4px;margin-left:4px">
+                <input type="number" name="quota" value="{{ u.quota }}" min="1" style="width:70px;padding:4px 8px;font-size:12px">
+                <button class="btn-warn" style="padding:6px 10px;font-size:12px">Quota</button>
+              </form>
+
+              <form method="post" action="/admin/users/topup/{{ u.id }}" style="display:inline-flex;gap:4px;margin-left:4px">
+                <input type="number" name="amount" placeholder="+/-" style="width:70px;padding:4px 8px;font-size:12px">
+                <input type="text" name="note" placeholder="catatan" style="width:90px;padding:4px 8px;font-size:12px">
+                <button class="btn-warn" style="padding:6px 10px;font-size:12px">Top-Up</button>
+              </form>
+
+              <form method="post" action="/admin/users/toggle/{{ u.id }}" style="display:inline">
+                <button class="btn-warn" style="padding:6px 10px;font-size:12px">
+                  {% if u.active %}Matikan{% else %}Aktifkan{% endif %}
+                </button>
+              </form>
+
+              {% if u.username != username %}
+              <form method="post" action="/admin/users/delete/{{ u.id }}" style="display:inline"
+                    onsubmit="return confirm('Hapus user {{ u.username }}?')">
+                <button class="btn-danger" style="padding:6px 10px;font-size:12px">Hapus</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</body>
+</html>
