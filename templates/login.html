@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login — RED Panel</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="auth-body">
+
+  <div class="auth-container">
+
+    <div class="auth-header">
+      <div class="logo-badge">RED</div>
+      <h1>Login</h1>
+      <p class="subtitle">Masuk ke akunmu</p>
+    </div>
+
+    <form method="post" class="auth-card">
+
+      {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+      {% endif %}
+
+      <label class="input-label">Username</label>
+      <input type="text" name="username" placeholder="Username kamu" required autofocus>
+
+      <label class="input-label">Password</label>
+      <input type="password" name="password" placeholder="Password kamu" required>
+
+      <button type="submit" class="btn-primary">Masuk</button>
+
+      <div class="auth-links">
+        <span>Belum punya akun? <a href="/register">Daftar di sini</a></span>
+      </div>
+
+      <div class="auth-links">
+        <a href="/">← Kembali ke Beranda</a>
+      </div>
+
+    </form>
+
+  </div>
+
+</body>
+</html>
